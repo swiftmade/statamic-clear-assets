@@ -7,7 +7,7 @@
 
 Works by scanning your entire `content` directory. An asset will be removed if none of the files in this directory points to it.
 
-![Screenshot](screenshot.png?raw=true "This is how it looks like in action")
+<img src="screenshot.png" width="350" />
 
 ## How to Install
 
