@@ -7,8 +7,6 @@
 
 Works by scanning your entire `content` directory. An asset will be removed if none of the files in this directory points to it.
 
-<img src="screenshot.png" width="350" />
-
 ## How to Install
 
 You can search for this addon in the `Tools > Addons` section of the Statamic control panel and click **install**, or run the following command from your project root:
