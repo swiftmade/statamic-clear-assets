@@ -5,6 +5,10 @@
             "Swiftmade\\StatamicClearAssets\\": "src"
         }
     },
+    "require": {
+        "php": "^7.4|^8.0",
+        "statamic/cms": "^3.0.0"
+    },
     "extra": {
         "statamic": {
             "name": "Statamic Clear Assets",
@@ -14,6 +18,14 @@
             "providers": [
                 "Swiftmade\\StatamicClearAssets\\ServiceProvider"
             ]
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.8"
+    },
+    "config": {
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true
         }
     }
 }
