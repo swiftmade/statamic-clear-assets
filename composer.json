@@ -1,0 +1,19 @@
+{
+    "name": "swiftmade/statamic-clear-assets",
+    "autoload": {
+        "psr-4": {
+            "Swiftmade\\StatamicClearAssets\\": "src"
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Statamic Clear Assets",
+            "description": "Statamic Clear Assets addon"
+        },
+        "laravel": {
+            "providers": [
+                "Swiftmade\\StatamicClearAssets\\ServiceProvider"
+            ]
+        }
+    }
+}
