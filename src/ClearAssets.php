@@ -3,6 +3,7 @@
 namespace Swiftmade\StatamicClearAssets;
 
 use Statamic\Assets\Asset;
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Statamic\Console\RunsInPlease;
 use Illuminate\Support\Facades\File;
@@ -20,15 +21,18 @@ class ClearAssets extends Command
 
     public function handle()
     {
-        $this->filterUnused(Asset::all())
-            ->whenEmpty(function () {
-                $this->info('No unused assets found.');
-                exit;
-            })
+        $unusedAssets = $this->filterUnused(Asset::all());
+
+        if ($unusedAssets->isEmpty()) {
+            return $this->info('No unused assets found.');
+        }
+
+        $unusedAssets
             ->tap(fn ($assets) => $this->comment(
                 sprintf(
-                    'Found %d unused assets, taking up %d MB of storage.',
+                    'Found %d unused %s, taking up %.2f MB of storage.',
                     $assets->count(),
+                    Str::plural('asset', $assets->count()),
                     $this->sizeInMegabytes($assets)
                 )
             ))
@@ -41,7 +45,7 @@ class ClearAssets extends Command
 
     private function sizeInMegabytes(AssetCollection $assets)
     {
-        return (int) $assets->sum(fn (Asset $asset) => $asset->size()) / 1024 / 1024;
+        return $assets->sum(fn (Asset $asset) => $asset->size()) / 1024 / 1024;
     }
 
     private function filterUnused(AssetCollection $assets)
