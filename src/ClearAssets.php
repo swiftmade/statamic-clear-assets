@@ -3,6 +3,7 @@
 namespace Swiftmade\StatamicClearAssets;
 
 use Statamic\Assets\Asset;
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Statamic\Console\RunsInPlease;
 use Illuminate\Support\Facades\File;
@@ -16,32 +17,64 @@ class ClearAssets extends Command
 
     protected $description = "Delete unused assets.";
 
-    private $continue = false;
+    private $choice;
+
+    const CMD_DELETE_ALL = 'Delete all';
+    const CMD_DELETE_BY_CHOICE = 'Choose what to delete';
+    const CMD_EXIT = 'Don\'t do anything';
+
+    public static $choices = [
+        self::CMD_DELETE_ALL,
+        self::CMD_DELETE_BY_CHOICE,
+        self::CMD_EXIT,
+    ];
 
     public function handle()
     {
-        $this->filterUnused(Asset::all())
-            ->whenEmpty(function () {
-                $this->info('No unused assets found.');
-                exit;
-            })
+        $unusedAssets = $this->filterUnused(Asset::all());
+
+        if ($unusedAssets->isEmpty()) {
+            return $this->info('No unused assets found.');
+        }
+
+        $unusedAssets
+            ->tap(fn ($assets) => $this->listAssets($assets))
             ->tap(fn ($assets) => $this->comment(
                 sprintf(
-                    'Found %d unused assets, taking up %d MB of storage.',
+                    'Found %d unused %s, taking up %s of storage.',
                     $assets->count(),
-                    $this->sizeInMegabytes($assets)
+                    Str::plural('asset', $assets->count()),
+                    $this->readableFilesize(
+                        $assets->sum->size()
+                    )
                 )
             ))
-            ->tap(fn () => $this->continue = $this->confirm('Delete these files?'))
+            ->tap(fn () => $this->presentChoices())
             ->when(
-                $this->continue,
+                $this->choice === self::CMD_DELETE_ALL,
                 fn ($assets) => $assets->each(fn ($asset) => $this->removeAsset($asset))
+            )
+            ->when(
+                $this->choice === self::CMD_DELETE_BY_CHOICE,
+                fn ($assets) => $assets->each(function ($asset) {
+                    if ($this->confirm('Delete "' . $asset->path() . '" ?')) {
+                        $this->removeAsset($asset);
+                    }
+                })
             );
     }
 
-    private function sizeInMegabytes(AssetCollection $assets)
+    private function listAssets(AssetCollection $assets)
     {
-        return (int) $assets->sum(fn (Asset $asset) => $asset->size()) / 1024 / 1024;
+        $this->table(
+            ['Asset', 'Size'],
+            $assets->map(
+                fn ($asset) => [
+                    $asset->path(),
+                    $this->readableFilesize($asset->size()),
+                ]
+            )
+        );
     }
 
     private function filterUnused(AssetCollection $assets)
@@ -64,5 +97,19 @@ class ClearAssets extends Command
     {
         $this->line('Removing ' . $asset->path());
         $asset->delete();
+    }
+
+    private function presentChoices()
+    {
+        $this->choice = $this->choice(
+            'What would you like to do?',
+            self::$choices,
+            0
+        );
+    }
+
+    private function readableFilesize($bytes)
+    {
+        return sprintf('%.2f MB', $bytes / 1024 / 1024);
     }
 }

@@ -1,2 +1,9 @@
-vendor
+# Composer
+/vendor
+composer.lock
+
+# PHP CS Fixer
 .php-cs-fixer.cache
+
+# PHP Unit
+.phpunit.result.cache
