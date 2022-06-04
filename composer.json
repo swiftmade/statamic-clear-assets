@@ -1,5 +1,17 @@
 {
     "name": "swiftmade/statamic-clear-assets",
+    "license": "MIT",
+    "type": "statamic-addon",
+    "description": "Deletes unused assets. Saves storage space.",
+    "homepage": "https://statamic.com/addons/swiftmade/clear-assets",
+    "authors": [
+        {
+            "name": "Ahmet Ozisik",
+            "email": "ahmet@swiftmade.co",
+            "homepage": "https://swiftmade.co",
+            "role": "Founder"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Swiftmade\\StatamicClearAssets\\": "src"
@@ -12,7 +24,7 @@
     "extra": {
         "statamic": {
             "name": "Statamic Clear Assets",
-            "description": "Statamic Clear Assets addon"
+            "description": "Deletes unused assets."
         },
         "laravel": {
             "providers": [
