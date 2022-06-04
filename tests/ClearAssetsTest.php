@@ -27,22 +27,32 @@ class ClearAssetsTest extends TestCase
 
         $this->artisan(ClearAssets::class)
             ->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
-            ->expectsQuestion('Delete these files?', false)
+            ->expectsChoice('What would you like to do?', ClearAssets::CMD_LIST, [
+                ClearAssets::CMD_DELETE_ALL,
+                ClearAssets::CMD_LIST,
+            ])
             ->doesntExpectOutput('Removing tallinn.jpg');
     }
 
     /**
      * @test
      */
-    public function it_detects_multiple_unused_assets()
+    public function it_can_list_unused_assets()
     {
         $this->createAsset('ankara.jpg');
         $this->createAsset('tallinn.jpg');
 
         $this->artisan(ClearAssets::class)
             ->expectsOutput('Found 2 unused assets, taking up 0.10 MB of storage.')
-            ->expectsQuestion('Delete these files?', false)
-            ->doesntExpectOutput('Removing tallinn.jpg');
+            ->expectsChoice('What would you like to do?', ClearAssets::CMD_LIST, [
+                ClearAssets::CMD_DELETE_ALL,
+                ClearAssets::CMD_LIST,
+            ])
+            ->doesntExpectOutput('Removing tallinn.jpg')
+            ->expectsTable(['Asset', 'Size'], [
+                ['ankara.jpg', '0.04 MB'],
+                ['tallinn.jpg', '0.06 MB'],
+            ]);
     }
 
     /**
@@ -55,7 +65,10 @@ class ClearAssetsTest extends TestCase
 
         $this->artisan(ClearAssets::class)
             ->expectsOutput('Found 2 unused assets, taking up 0.10 MB of storage.')
-            ->expectsQuestion('Delete these files?', true)
+            ->expectsChoice('What would you like to do?', ClearAssets::CMD_DELETE_ALL, [
+                ClearAssets::CMD_DELETE_ALL,
+                ClearAssets::CMD_LIST,
+            ])
             ->expectsOutput('Removing ankara.jpg')
             ->expectsOutput('Removing tallinn.jpg');
 

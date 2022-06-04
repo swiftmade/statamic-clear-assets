@@ -17,7 +17,10 @@ class ClearAssets extends Command
 
     protected $description = "Delete unused assets.";
 
-    private $continue = false;
+    private $choice;
+
+    const CMD_DELETE_ALL = 'Delete All';
+    const CMD_LIST = 'List';
 
     public function handle()
     {
@@ -30,22 +33,31 @@ class ClearAssets extends Command
         $unusedAssets
             ->tap(fn ($assets) => $this->comment(
                 sprintf(
-                    'Found %d unused %s, taking up %.2f MB of storage.',
+                    'Found %d unused %s, taking up %s of storage.',
                     $assets->count(),
                     Str::plural('asset', $assets->count()),
-                    $this->sizeInMegabytes($assets)
+                    $this->readableFilesize(
+                        $assets->sum->size()
+                    )
                 )
             ))
-            ->tap(fn () => $this->continue = $this->confirm('Delete these files?'))
+            ->tap(fn () => $this->presentChoices())
             ->when(
-                $this->continue,
+                $this->choice === self::CMD_DELETE_ALL,
                 fn ($assets) => $assets->each(fn ($asset) => $this->removeAsset($asset))
+            )
+            ->when(
+                $this->choice === self::CMD_LIST,
+                fn ($assets) => $this->table(
+                    ['Asset', 'Size'],
+                    $assets->map(
+                        fn ($asset) => [
+                            $asset->path(),
+                            $this->readableFilesize($asset->size()),
+                        ]
+                    )
+                ),
             );
-    }
-
-    private function sizeInMegabytes(AssetCollection $assets)
-    {
-        return $assets->sum(fn (Asset $asset) => $asset->size()) / 1024 / 1024;
     }
 
     private function filterUnused(AssetCollection $assets)
@@ -68,5 +80,24 @@ class ClearAssets extends Command
     {
         $this->line('Removing ' . $asset->path());
         $asset->delete();
+    }
+
+    private function presentChoices()
+    {
+        $choices = [
+            self::CMD_DELETE_ALL,
+            self::CMD_LIST,
+        ];
+
+        $this->choice = $this->choice(
+            'What would you like to do?',
+            $choices,
+            0
+        );
+    }
+
+    private function readableFilesize($bytes)
+    {
+        return sprintf('%.2f', $bytes / 1024 / 1024) . ' MB';
     }
 }
