@@ -19,8 +19,15 @@ class ClearAssets extends Command
 
     private $choice;
 
-    const CMD_DELETE_ALL = 'Delete All';
-    const CMD_LIST = 'List';
+    const CMD_DELETE_ALL = 'Delete all';
+    const CMD_DELETE_BY_CHOICE = 'Choose what to delete';
+    const CMD_EXIT = 'Don\'t do anything';
+
+    public static $choices = [
+        self::CMD_DELETE_ALL,
+        self::CMD_DELETE_BY_CHOICE,
+        self::CMD_EXIT,
+    ];
 
     public function handle()
     {
@@ -31,6 +38,7 @@ class ClearAssets extends Command
         }
 
         $unusedAssets
+            ->tap(fn ($assets) => $this->listAssets($assets))
             ->tap(fn ($assets) => $this->comment(
                 sprintf(
                     'Found %d unused %s, taking up %s of storage.',
@@ -47,17 +55,26 @@ class ClearAssets extends Command
                 fn ($assets) => $assets->each(fn ($asset) => $this->removeAsset($asset))
             )
             ->when(
-                $this->choice === self::CMD_LIST,
-                fn ($assets) => $this->table(
-                    ['Asset', 'Size'],
-                    $assets->map(
-                        fn ($asset) => [
-                            $asset->path(),
-                            $this->readableFilesize($asset->size()),
-                        ]
-                    )
-                ),
+                $this->choice === self::CMD_DELETE_BY_CHOICE,
+                fn ($assets) => $assets->each(function ($asset) {
+                    if ($this->confirm('Delete "' . $asset->path() . '" ?')) {
+                        $this->removeAsset($asset);
+                    }
+                })
             );
+    }
+
+    private function listAssets(AssetCollection $assets)
+    {
+        $this->table(
+            ['Asset', 'Size'],
+            $assets->map(
+                fn ($asset) => [
+                    $asset->path(),
+                    $this->readableFilesize($asset->size()),
+                ]
+            )
+        );
     }
 
     private function filterUnused(AssetCollection $assets)
@@ -84,20 +101,15 @@ class ClearAssets extends Command
 
     private function presentChoices()
     {
-        $choices = [
-            self::CMD_DELETE_ALL,
-            self::CMD_LIST,
-        ];
-
         $this->choice = $this->choice(
             'What would you like to do?',
-            $choices,
+            self::$choices,
             0
         );
     }
 
     private function readableFilesize($bytes)
     {
-        return sprintf('%.2f', $bytes / 1024 / 1024) . ' MB';
+        return sprintf('%.2f MB', $bytes / 1024 / 1024);
     }
 }
