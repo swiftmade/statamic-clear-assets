@@ -12,14 +12,27 @@
             "role": "Founder"
         }
     ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "laravel/framework": "^7.30.3 || ^8.24 || ^9.0",
+        "statamic/cms": "^3.0.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "mockery/mockery": "^1.3.1",
+        "nunomaduro/collision": "^4.1 || ^5.0 || ^6.0",
+        "orchestra/testbench": "^6.9|^7.1",
+        "phpunit/phpunit": "^9.5"
+    },
     "autoload": {
         "psr-4": {
             "Swiftmade\\StatamicClearAssets\\": "src"
         }
     },
-    "require": {
-        "php": "^7.4|^8.0",
-        "statamic/cms": "^3.0.0"
+    "autoload-dev": {
+        "psr-4": {
+            "Swiftmade\\StatamicClearAssets\\Tests\\": "tests"
+        }
     },
     "extra": {
         "statamic": {
@@ -31,9 +44,6 @@
                 "Swiftmade\\StatamicClearAssets\\ServiceProvider"
             ]
         }
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.8"
     },
     "config": {
         "allow-plugins": {
