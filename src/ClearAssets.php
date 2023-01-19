@@ -8,6 +8,10 @@ use Illuminate\Console\Command;
 use Statamic\Console\RunsInPlease;
 use Illuminate\Support\Facades\File;
 use Statamic\Assets\AssetCollection;
+use Statamic\Facades\AssetContainer;
+use function config;
+use function count;
+use function in_array;
 
 class ClearAssets extends Command
 {
@@ -31,7 +35,11 @@ class ClearAssets extends Command
 
     public function handle()
     {
-        $unusedAssets = $this->filterUnused(Asset::all());
+        $unusedAssets = $this->filterUnused(
+            $this->assetsFromContainers(
+                config('statamic.clear-assets.containers')
+            )
+        );
 
         if ($unusedAssets->isEmpty()) {
             return $this->info('No unused assets found.');
@@ -111,5 +119,18 @@ class ClearAssets extends Command
     private function readableFilesize($bytes)
     {
         return sprintf('%.2f MB', $bytes / 1024 / 1024);
+    }
+
+    private function assetsFromContainers($containers)
+    {
+        if (count($containers) === 0) {
+            return Asset::all();
+        }
+
+        $assets = AssetContainer::all()
+            ->filter(fn ($container) => in_array($container->handle(), $containers))
+            ->flatMap->assets();
+
+        return AssetCollection::make($assets);
     }
 }
