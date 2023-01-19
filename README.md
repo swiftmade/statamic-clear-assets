@@ -17,8 +17,31 @@ composer require swiftmade/statamic-clear-assets
 
 ## How to Use
 
-Simply run:
+Publish the configuration
+```bash
+php artisan vendor:publish --tag=statamic-clear-assets-config
+```
+
+Add your asset container handles to the `containers` in the configuration
+```php
+    // Specify the asset containers you want to clear.
+    'containers' => [
+        'assets',
+    ],
+```
+
+Then simply run:
 
 ```bash
 php please assets:clear
 ```
+
+Optionally you can add the choice to the command
+
+possible values:
+* all
+* select
+```bash
+php please assets:clear --choice=all
+```
+When the choice is not found you will be prompted to choose
