@@ -12,12 +12,13 @@ use Statamic\Facades\AssetContainer;
 use function config;
 use function count;
 use function in_array;
+use function is_null;
 
 class ClearAssets extends Command
 {
     use RunsInPlease;
 
-    protected $name = 'statamic:assets:clear';
+    protected $name = 'statamic:assets:clear {--choice=}';
 
     protected $description = "Delete unused assets.";
 
@@ -109,6 +110,12 @@ class ClearAssets extends Command
 
     private function presentChoices()
     {
+        $this->selectChoiceFromCommand();
+
+        if (!is_null($this->choice)) {
+            return;
+        }
+
         $this->choice = $this->choice(
             'What would you like to do?',
             self::$choices,
@@ -132,5 +139,13 @@ class ClearAssets extends Command
             ->flatMap->assets();
 
         return AssetCollection::make($assets);
+    }
+
+    public function selectChoiceFromCommand()
+    {
+        $this->choice = [
+            'all' => self::CMD_DELETE_ALL,
+            'select' => self::CMD_DELETE_BY_CHOICE,
+        ][$this->option('choice')] ?? null;
     }
 }
