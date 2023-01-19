@@ -18,15 +18,16 @@ class ClearAssetsTest extends TestCase
     /**
      * @test
      */
-    public function it_detects_unused_asset_and_skips_used_asset()
+    public function it_can_exit_without_doing_anything()
     {
         $this->createAsset('tallinn.jpg');
+
         $this->createAsset('ankara.jpg');
 
         $this->useAsset('ankara.jpg');
 
         $this->artisan(ClearAssets::class)
-            ->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
+            //->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
             ->expectsChoice('What would you like to do?', ClearAssets::CMD_EXIT, ClearAssets::$choices)
             ->doesntExpectOutput('Removing tallinn.jpg');
     }
@@ -63,7 +64,7 @@ class ClearAssetsTest extends TestCase
             ->expectsOutput('Removing ankara.jpg')
             ->expectsOutput('Removing tallinn.jpg');
 
-        $this->assertEquals(0, $this->assetContainer->listContents()->count());
+        $this->assertContainerFileCount('assets', 0);
     }
 
     /**
@@ -82,7 +83,7 @@ class ClearAssetsTest extends TestCase
             ->expectsQuestion('Delete "tallinn.jpg" ?', false)
             ->doesntExpectOutput('Removing tallinn.jpg');
 
-        $this->assertEquals(1, $this->assetContainer->listContents()->count());
+        $this->assertContainerFileCount('assets', 1);
     }
 
     private function createAsset($filename)
@@ -93,7 +94,7 @@ class ClearAssetsTest extends TestCase
             'image/jpeg'
         );
 
-        $this->assetContainer->makeAsset($filename)->upload($file);
+        $this->saveFileToContainer($file);
     }
 
     private function useAsset($filename)

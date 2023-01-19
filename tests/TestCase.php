@@ -5,41 +5,48 @@ namespace Swiftmade\StatamicClearAssets\Tests;
 use Statamic\Statamic;
 use Statamic\Assets\Asset;
 use Statamic\Extend\Manifest;
-use Statamic\Assets\AssetContainer;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use Swiftmade\StatamicClearAssets\Tests\Concerns\ManagesAssetContainers;
 
 class TestCase extends OrchestraTestCase
 {
+    use ManagesAssetContainers;
+
+    private $basePath = 'vendor/orchestra/testbench-core/laravel';
+
     /** @var \Statamic\Assets\AssetContainer */
-    protected $assetContainer;
+    protected $assetContainers;
 
     protected function setUp(): void
     {
-        parent::setUp();
+        $this->setUpContentDirectory();
 
-        $this->initializeDirectory('vendor/orchestra/testbench-core/laravel/content');
+        parent::setUp();
 
         config(['filesystems.disks.test' => [
             'driver' => 'local',
             'root' => __DIR__ . '/../tmp',
             'url' => '/test',
         ]]);
-
-
-        $this->assetContainer = (new AssetContainer)
-            ->handle('test_container')
-            ->disk('test')
-            ->save();
     }
 
     protected function tearDown(): void
     {
-        File::deleteDirectory('vendor/orchestra/testbench-core/laravel/content');
+        //File::deleteDirectory('vendor/orchestra/testbench-core/laravel/content');
         File::deleteDirectory('tmp');
         Asset::all()->each->delete();
 
         parent::tearDown();
+    }
+
+    protected function setUpContentDirectory()
+    {
+        $this->initializeDirectory($this->basePath . '/content');
+
+        $this->createAssetContainer('assets');
+        $this->createAssetContainer('favicons');
+        $this->createAssetContainer('social_images');
     }
 
     protected function getPackageProviders($app)
@@ -89,10 +96,8 @@ class TestCase extends OrchestraTestCase
 
     protected function initializeDirectory($directory)
     {
-        if (File::isDirectory($directory)) {
-            File::deleteDirectory($directory);
+        if (! file_exists($directory)) {
+            mkdir($directory);
         }
-
-        File::makeDirectory($directory, 0755, true);
     }
 }
