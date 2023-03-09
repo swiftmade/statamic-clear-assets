@@ -27,7 +27,7 @@ class ClearAssetsTest extends TestCase
         $this->useAsset('ankara.jpg');
 
         $this->artisan(ClearAssets::class)
-            //->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
+            ->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
             ->expectsChoice('What would you like to do?', ClearAssets::CMD_EXIT, ClearAssets::$choices)
             ->doesntExpectOutput('Removing tallinn.jpg');
     }
@@ -88,10 +88,15 @@ class ClearAssetsTest extends TestCase
 
     private function createAsset($filename)
     {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'test_' . $filename);
+        copy(__DIR__ . '/fixtures/' . $filename, $tmpFile);
+
         $file = new UploadedFile(
-            __DIR__ . '/fixtures/' . $filename,
+            $tmpFile,
             $filename,
-            'image/jpeg'
+            'image/jpeg',
+            null,
+            true
         );
 
         $this->saveFileToContainer($file);
