@@ -33,7 +33,7 @@ class TestCase extends OrchestraTestCase
 
     protected function tearDown(): void
     {
-        //File::deleteDirectory('vendor/orchestra/testbench-core/laravel/content');
+        File::deleteDirectory('vendor/orchestra/testbench-core/laravel/content');
         File::deleteDirectory('tmp');
         Asset::all()->each->delete();
 
