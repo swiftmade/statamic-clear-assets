@@ -15,6 +15,11 @@ You can search for this addon in the `Tools > Addons` section of the Statamic co
 composer require swiftmade/statamic-clear-assets
 ```
 
+Publish the configuration
+ ```bash
+ php artisan vendor:publish --tag=statamic-clear-assets-config
+ ```
+
 ## How to Use
 
 Simply run:
@@ -22,3 +27,7 @@ Simply run:
 ```bash
 php please assets:clear
 ```
+
+## Configuration
+
+View `config/statamic-clear-assets.php` for all the configuration options.
