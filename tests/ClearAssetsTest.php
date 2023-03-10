@@ -21,12 +21,13 @@ class ClearAssetsTest extends TestCase
     public function it_can_exit_without_doing_anything()
     {
         $this->createAsset('tallinn.jpg');
-
         $this->createAsset('ankara.jpg');
-
         $this->useAsset('ankara.jpg');
 
         $this->artisan(ClearAssets::class)
+            ->expectsTable(['Asset', 'Size'], [
+                ['tallinn.jpg', '0.06 MB'],
+            ])
             ->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
             ->expectsChoice('What would you like to do?', ClearAssets::CMD_EXIT, ClearAssets::$choices)
             ->doesntExpectOutput('Removing tallinn.jpg');
