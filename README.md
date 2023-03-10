@@ -29,6 +29,6 @@ Simply run:
 php please assets:clear
 ```
 
-## Configuration
+## Configuration
 
 View `config/statamic-clear-assets.php` for all the configuration options.
