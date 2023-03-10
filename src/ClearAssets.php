@@ -6,8 +6,8 @@ use Statamic\Assets\Asset;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Statamic\Console\RunsInPlease;
+use Illuminate\Support\Facades\File;
 use Statamic\Assets\AssetCollection;
-use Symfony\Component\Process\Process;
 
 class ClearAssets extends Command
 {
@@ -79,29 +79,18 @@ class ClearAssets extends Command
 
     private function filterUnused(AssetCollection $assets)
     {
-        // We're going to recursively scan these folders for matches
-        $scanDirectories = config('statamic-clear-assets.scan_folders', ['content']);
+        collect(File::allFiles(base_path('content')))->each(function ($contentFile) use ($assets) {
+            $contents = file_get_contents($contentFile);
 
-        return $assets
-            ->filter(function ($asset) use ($scanDirectories) {
-                // Grep flags:
-                // -r recursive
-                // -F fixed string
-                // -w whole word
-                // -l list filenams
-                $grep = new Process(
-                    array_merge(
-                        ['grep', '-rFwl', $asset->path()],
-                        $scanDirectories
-                    ),
-                    base_path()
-                );
+            $assets->each(function ($asset, $index) use ($contents, $assets) {
+                // If asset is used in content, then remove it from unused list.
+                if (strpos($contents, $asset->path()) !== false) {
+                    $assets->forget($index);
+                }
+            });
+        });
 
-                $grep->run();
-
-                return empty($grep->getOutput());
-            })
-            ->values();
+        return $assets->values();
     }
 
     private function removeAsset(Asset $asset)
