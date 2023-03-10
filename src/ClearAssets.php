@@ -79,7 +79,7 @@ class ClearAssets extends Command
 
     private function filterUnused(AssetCollection $assets)
     {
-        $assets = $assets->filter(function ($asset) {
+        $assets = $assets->filter(function (Asset $asset) {
             // Skip assets that are in the ignored containers.
             $shouldIgnore = in_array(
                 $asset->container()->handle(),
@@ -95,6 +95,11 @@ class ClearAssets extends Command
                 if (Str::is($pattern, $asset->path())) {
                     return false;
                 }
+            }
+
+            // Skip assets that are newer than the ignore_days.
+            if ($asset->lastModified()->diffInDays(now(), true) < config('statamic-clear-assets.minimum_age_in_days', 0)) {
+                return false;
             }
 
             return true;

@@ -27,4 +27,10 @@ return [
     'ignore_filenames' => [
         //
     ],
+
+    /**
+     * You might not want to delete very fresh assets, as perhaps you want to use them soon.
+     * Use this config to only detect and delete files older than x days.
+     */
+    'minimum_age_in_days' => 0,
 ];
