@@ -36,7 +36,7 @@ trait ManagesAssetContainers
     {
         $this->assertEquals(
             $length,
-            $this->getAssetContainer($handle)->listContents()->count(),
+            $this->getAssetContainer($handle)->assets()->count(),
             'Could not find the expected number of files in the container "' . $handle . '".'
         );
     }

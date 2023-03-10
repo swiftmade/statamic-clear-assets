@@ -5,7 +5,7 @@ namespace Swiftmade\StatamicClearAssets\Tests;
 use Statamic\Statamic;
 use Statamic\Assets\Asset;
 use Statamic\Extend\Manifest;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Swiftmade\StatamicClearAssets\Tests\Concerns\ManagesAssetContainers;
 
@@ -47,8 +47,7 @@ class TestCase extends OrchestraTestCase
     {
         Asset::all()->each->delete();
 
-        $process = new Process(['rm', '-rf', __DIR__ . '/../vendor/orchestra/testbench-core/laravel/content/*.yaml']);
-        $process->run();
+        File::deleteDirectory(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/content');
 
         parent::tearDown();
     }
