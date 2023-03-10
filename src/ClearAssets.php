@@ -79,16 +79,46 @@ class ClearAssets extends Command
 
     private function filterUnused(AssetCollection $assets)
     {
-        collect(File::allFiles(base_path('content')))->each(function ($contentFile) use ($assets) {
-            $contents = file_get_contents($contentFile);
+        $assets = $assets->filter(function (Asset $asset) {
+            // Skip assets that are in the ignored containers.
+            $shouldIgnore = in_array(
+                $asset->container()->handle(),
+                config('statamic-clear-assets.ignore_containers')
+            );
 
-            $assets->each(function ($asset, $index) use ($contents, $assets) {
-                // If asset is used in content, then remove it from unused list.
-                if (strpos($contents, $asset->path()) !== false) {
-                    $assets->forget($index);
+            if ($shouldIgnore) {
+                return false;
+            }
+
+            // Skip assets that match the ignore_filenames.
+            foreach (config('statamic-clear-assets.ignore_filenames') as $pattern) {
+                if (Str::is($pattern, $asset->path())) {
+                    return false;
                 }
-            });
+            }
+
+            // Skip assets that are newer than the ignore_days.
+            if ($asset->lastModified()->diffInDays(now(), true) < config('statamic-clear-assets.minimum_age_in_days', 0)) {
+                return false;
+            }
+
+            return true;
         });
+
+        collect(config('statamic-clear-assets.scan_folders', ['content']))
+            ->map(fn ($folder) => File::allFiles(base_path($folder)))
+            ->flatten()
+            ->unique()
+            ->each(function ($contentFile) use ($assets) {
+                $contents = file_get_contents($contentFile);
+
+                $assets->each(function ($asset, $index) use ($contents, $assets) {
+                    // If asset is used in content, then remove it from unused list.
+                    if (strpos($contents, $asset->path()) !== false) {
+                        $assets->forget($index);
+                    }
+                });
+            });
 
         return $assets->values();
     }

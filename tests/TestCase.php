@@ -5,41 +5,60 @@ namespace Swiftmade\StatamicClearAssets\Tests;
 use Statamic\Statamic;
 use Statamic\Assets\Asset;
 use Statamic\Extend\Manifest;
-use Statamic\Assets\AssetContainer;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use Swiftmade\StatamicClearAssets\Tests\Concerns\ManagesAssetContainers;
 
 class TestCase extends OrchestraTestCase
 {
+    use ManagesAssetContainers;
+
+    private $basePath = 'vendor/orchestra/testbench-core/laravel';
+
     /** @var \Statamic\Assets\AssetContainer */
-    protected $assetContainer;
+    protected $assetContainers;
 
     protected function setUp(): void
     {
+        $this->setUpContentDirectory();
+
         parent::setUp();
 
-        $this->initializeDirectory('vendor/orchestra/testbench-core/laravel/content');
-
-        config(['filesystems.disks.test' => [
+        config(['filesystems.disks.assets' => [
             'driver' => 'local',
-            'root' => __DIR__ . '/../tmp',
-            'url' => '/test',
+            'root' => __DIR__ . '/../tmp/assets',
+            'url' => '/assets',
         ]]);
 
+        config(['filesystems.disks.favicons' => [
+            'driver' => 'local',
+            'root' => __DIR__ . '/../tmp/favicons',
+            'url' => '/favicons',
+        ]]);
 
-        $this->assetContainer = (new AssetContainer)
-            ->handle('test_container')
-            ->disk('test')
-            ->save();
+        config(['filesystems.disks.social_images' => [
+            'driver' => 'local',
+            'root' => __DIR__ . '/../tmp/social_images',
+            'url' => '/social_images',
+        ]]);
     }
 
     protected function tearDown(): void
     {
-        File::deleteDirectory('vendor/orchestra/testbench-core/laravel/content');
-        File::deleteDirectory('tmp');
         Asset::all()->each->delete();
 
+        File::deleteDirectory(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/content');
+
         parent::tearDown();
+    }
+
+    protected function setUpContentDirectory()
+    {
+        $this->initializeDirectory($this->basePath . '/content');
+
+        $this->createAssetContainer('assets');
+        $this->createAssetContainer('favicons');
+        $this->createAssetContainer('social_images');
     }
 
     protected function getPackageProviders($app)
@@ -81,16 +100,19 @@ class TestCase extends OrchestraTestCase
         ];
 
         foreach ($configs as $config) {
-            $app['config']->set("statamic.$config", require(__DIR__ . "/../vendor/statamic/cms/config/{$config}.php"));
+            $app['config']->set(
+                "statamic.$config",
+                require(__DIR__ . "/../vendor/statamic/cms/config/{$config}.php")
+            );
         }
+
+        $app['config']->set('statamic.users.repository', 'file');
     }
 
     protected function initializeDirectory($directory)
     {
-        if (File::isDirectory($directory)) {
-            File::deleteDirectory($directory);
+        if (! file_exists($directory)) {
+            mkdir($directory);
         }
-
-        File::makeDirectory($directory, 0755, true);
     }
 }

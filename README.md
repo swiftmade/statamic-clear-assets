@@ -2,6 +2,7 @@
 
 ![Statamic 3.0+](https://img.shields.io/badge/Statamic-3.0+-FF269E?style=for-the-badge&link=https://statamic.com)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/swiftmade/statamic-clear-assets.svg?style=for-the-badge)](https://packagist.org/packages/swiftmade/statamic-clear-assets)
+![Downloads](https://img.shields.io/packagist/dt/swiftmade/statamic-clear-assets?style=for-the-badge)
 
 > Get rid of unused assets taking up space in your project.
 
@@ -15,6 +16,11 @@ You can search for this addon in the `Tools > Addons` section of the Statamic co
 composer require swiftmade/statamic-clear-assets
 ```
 
+Publish the configuration
+ ```bash
+ php artisan vendor:publish --tag=statamic-clear-assets-config
+ ```
+
 ## How to Use
 
 Simply run:
@@ -22,3 +28,7 @@ Simply run:
 ```bash
 php please assets:clear
 ```
+
+## Configuration
+
+View `config/statamic-clear-assets.php` for all the configuration options.

@@ -18,14 +18,16 @@ class ClearAssetsTest extends TestCase
     /**
      * @test
      */
-    public function it_detects_unused_asset_and_skips_used_asset()
+    public function it_can_exit_without_doing_anything()
     {
         $this->createAsset('tallinn.jpg');
         $this->createAsset('ankara.jpg');
-
         $this->useAsset('ankara.jpg');
 
         $this->artisan(ClearAssets::class)
+            ->expectsTable(['Asset', 'Size'], [
+                ['tallinn.jpg', '0.06 MB'],
+            ])
             ->expectsOutput('Found 1 unused asset, taking up 0.06 MB of storage.')
             ->expectsChoice('What would you like to do?', ClearAssets::CMD_EXIT, ClearAssets::$choices)
             ->doesntExpectOutput('Removing tallinn.jpg');
@@ -52,6 +54,29 @@ class ClearAssetsTest extends TestCase
     /**
      * @test
      */
+    public function it_ignores_containers()
+    {
+        $this->createAsset('ankara.jpg', 'social_images');
+        $this->createAsset('tallinn.jpg', 'favicons');
+
+        $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_ignores_filenames()
+    {
+        config(['statamic-clear-assets.ignore_filenames' => ['ankara*']]);
+
+        $this->createAsset('ankara.jpg');
+
+        $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
+    }
+
+    /**
+     * @test
+     */
     public function it_deletes_all_unused_assets()
     {
         $this->createAsset('ankara.jpg');
@@ -63,7 +88,7 @@ class ClearAssetsTest extends TestCase
             ->expectsOutput('Removing ankara.jpg')
             ->expectsOutput('Removing tallinn.jpg');
 
-        $this->assertEquals(0, $this->assetContainer->listContents()->count());
+        $this->assertContainerFileCount('assets', 0);
     }
 
     /**
@@ -82,18 +107,26 @@ class ClearAssetsTest extends TestCase
             ->expectsQuestion('Delete "tallinn.jpg" ?', false)
             ->doesntExpectOutput('Removing tallinn.jpg');
 
-        $this->assertEquals(1, $this->assetContainer->listContents()->count());
+        $this->assertContainerFileCount('assets', 1);
     }
 
-    private function createAsset($filename)
+    private function createAsset($filename, $container = 'assets')
     {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'test_' . $filename);
+        copy(__DIR__ . '/fixtures/' . $filename, $tmpFile);
+
         $file = new UploadedFile(
-            __DIR__ . '/fixtures/' . $filename,
+            $tmpFile,
             $filename,
-            'image/jpeg'
+            'image/jpeg',
+            null,
+            true
         );
 
-        $this->assetContainer->makeAsset($filename)->upload($file);
+        $this->saveFileToContainer(
+            $file,
+            $this->getAssetContainer($container)
+        );
     }
 
     private function useAsset($filename)
