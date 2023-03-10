@@ -5,7 +5,7 @@ namespace Swiftmade\StatamicClearAssets\Tests;
 use Statamic\Statamic;
 use Statamic\Assets\Asset;
 use Statamic\Extend\Manifest;
-use Illuminate\Support\Facades\File;
+use Symfony\Component\Process\Process;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Swiftmade\StatamicClearAssets\Tests\Concerns\ManagesAssetContainers;
 
@@ -24,18 +24,31 @@ class TestCase extends OrchestraTestCase
 
         parent::setUp();
 
-        config(['filesystems.disks.test' => [
+        config(['filesystems.disks.assets' => [
             'driver' => 'local',
             'root' => __DIR__ . '/../tmp',
-            'url' => '/test',
+            'url' => '/assets',
+        ]]);
+
+        config(['filesystems.disks.favicons' => [
+            'driver' => 'local',
+            'root' => __DIR__ . '/../tmp/favicons',
+            'url' => '/favicons',
+        ]]);
+
+        config(['filesystems.disks.social_images' => [
+            'driver' => 'local',
+            'root' => __DIR__ . '/../tmp/social_images',
+            'url' => '/social_images',
         ]]);
     }
 
     protected function tearDown(): void
     {
-        File::deleteDirectory('vendor/orchestra/testbench-core/laravel/content');
-        File::deleteDirectory('tmp');
         Asset::all()->each->delete();
+
+        $process = new Process(['rm', '-rf', __DIR__ . '/../vendor/orchestra/testbench-core/laravel/content/*.yaml']);
+        $process->run();
 
         parent::tearDown();
     }

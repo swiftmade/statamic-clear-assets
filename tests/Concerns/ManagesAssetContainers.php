@@ -19,7 +19,7 @@ trait ManagesAssetContainers
 
         file_put_contents($path, join("\n", [
             "title: '{$handle}'",
-            "disk: 'test'",
+            "disk: '{$handle}'",
         ]));
     }
 
