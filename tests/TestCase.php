@@ -100,7 +100,10 @@ class TestCase extends OrchestraTestCase
         ];
 
         foreach ($configs as $config) {
-            $app['config']->set("statamic.$config", require(__DIR__ . "/../vendor/statamic/cms/config/{$config}.php"));
+            $app['config']->set(
+                "statamic.$config",
+                require(__DIR__ . "/../vendor/statamic/cms/config/{$config}.php")
+            );
         }
 
         $app['config']->set('statamic.users.repository', 'file');

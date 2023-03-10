@@ -79,12 +79,26 @@ class ClearAssets extends Command
 
     private function filterUnused(AssetCollection $assets)
     {
-        $assets = $assets->filter(
-            fn ($asset) => ! in_array(
+        $assets = $assets->filter(function ($asset) {
+            // Skip assets that are in the ignored containers.
+            $shouldIgnore = in_array(
                 $asset->container()->handle(),
                 config('statamic-clear-assets.ignore_containers')
-            )
-        );
+            );
+
+            if ($shouldIgnore) {
+                return false;
+            }
+
+            // Skip assets that match the ignore_filenames.
+            foreach (config('statamic-clear-assets.ignore_filenames') as $pattern) {
+                if (Str::is($pattern, $asset->path())) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
 
         collect(config('statamic-clear-assets.scan_folders', ['content']))
             ->map(fn ($folder) => File::allFiles(base_path($folder)))

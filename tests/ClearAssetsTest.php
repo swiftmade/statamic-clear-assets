@@ -65,6 +65,18 @@ class ClearAssetsTest extends TestCase
     /**
      * @test
      */
+    public function it_ignores_filenames()
+    {
+        config(['statamic-clear-assets.ignore_filenames' => ['ankara*']]);
+
+        $this->createAsset('ankara.jpg');
+
+        $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
+    }
+
+    /**
+     * @test
+     */
     public function it_deletes_all_unused_assets()
     {
         $this->createAsset('ankara.jpg');
