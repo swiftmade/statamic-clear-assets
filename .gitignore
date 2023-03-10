@@ -7,3 +7,6 @@ composer.lock
 
 # PHP Unit
 .phpunit.result.cache
+
+# Assets
+/tmp
