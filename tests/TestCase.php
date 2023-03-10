@@ -26,7 +26,7 @@ class TestCase extends OrchestraTestCase
 
         config(['filesystems.disks.assets' => [
             'driver' => 'local',
-            'root' => __DIR__ . '/../tmp',
+            'root' => __DIR__ . '/../tmp/assets',
             'url' => '/assets',
         ]]);
 

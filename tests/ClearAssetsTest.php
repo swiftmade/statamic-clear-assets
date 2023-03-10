@@ -54,6 +54,17 @@ class ClearAssetsTest extends TestCase
     /**
      * @test
      */
+    public function it_ignores_containers()
+    {
+        $this->createAsset('ankara.jpg', 'social_images');
+        $this->createAsset('tallinn.jpg', 'favicons');
+
+        $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
+    }
+
+    /**
+     * @test
+     */
     public function it_deletes_all_unused_assets()
     {
         $this->createAsset('ankara.jpg');
@@ -87,7 +98,7 @@ class ClearAssetsTest extends TestCase
         $this->assertContainerFileCount('assets', 1);
     }
 
-    private function createAsset($filename)
+    private function createAsset($filename, $container = 'assets')
     {
         $tmpFile = tempnam(sys_get_temp_dir(), 'test_' . $filename);
         copy(__DIR__ . '/fixtures/' . $filename, $tmpFile);
@@ -100,7 +111,10 @@ class ClearAssetsTest extends TestCase
             true
         );
 
-        $this->saveFileToContainer($file);
+        $this->saveFileToContainer(
+            $file,
+            $this->getAssetContainer($container)
+        );
     }
 
     private function useAsset($filename)

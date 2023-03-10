@@ -79,16 +79,27 @@ class ClearAssets extends Command
 
     private function filterUnused(AssetCollection $assets)
     {
-        collect(File::allFiles(base_path('content')))->each(function ($contentFile) use ($assets) {
-            $contents = file_get_contents($contentFile);
+        $assets = $assets->filter(
+            fn ($asset) => ! in_array(
+                $asset->container()->handle(),
+                config('statamic-clear-assets.ignore_containers')
+            )
+        );
 
-            $assets->each(function ($asset, $index) use ($contents, $assets) {
-                // If asset is used in content, then remove it from unused list.
-                if (strpos($contents, $asset->path()) !== false) {
-                    $assets->forget($index);
-                }
+        collect(config('statamic-clear-assets.scan_folders', ['content']))
+            ->map(fn ($folder) => File::allFiles(base_path($folder)))
+            ->flatten()
+            ->unique()
+            ->each(function ($contentFile) use ($assets) {
+                $contents = file_get_contents($contentFile);
+
+                $assets->each(function ($asset, $index) use ($contents, $assets) {
+                    // If asset is used in content, then remove it from unused list.
+                    if (strpos($contents, $asset->path()) !== false) {
+                        $assets->forget($index);
+                    }
+                });
             });
-        });
 
         return $assets->values();
     }
