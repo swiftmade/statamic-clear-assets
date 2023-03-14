@@ -4,9 +4,13 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/swiftmade/statamic-clear-assets.svg?style=for-the-badge)](https://packagist.org/packages/swiftmade/statamic-clear-assets)
 ![Downloads](https://img.shields.io/packagist/dt/swiftmade/statamic-clear-assets?style=for-the-badge)
 
-> Get rid of unused assets taking up space in your project.
+Clean up unused images and assets from your Statamic site. Saves storage, keep things tidy.
 
-Works by scanning your entire `content` directory. An asset will be removed if none of the files in this directory points to it.
+The addon scans your entire `content` directory. If an asset is not referenced in any of your content, it will be marked as unused. You can review the list of unused assets and delete them.
+
+The addon is easy to configure. See the [Configuration](#configuration) section below.
+
+![demo](demo.gif)
 
 ## How to Install
 
@@ -15,11 +19,6 @@ You can search for this addon in the `Tools > Addons` section of the Statamic co
 ```bash
 composer require swiftmade/statamic-clear-assets
 ```
-
-Publish the configuration
- ```bash
- php artisan vendor:publish --tag=statamic-clear-assets-config
- ```
 
 ## How to Use
 
@@ -31,4 +30,47 @@ php please assets:clear
 
 ## Configuration
 
-View `config/statamic-clear-assets.php` for all the configuration options.
+To publish the config file, use:
+
+ ```bash
+ php artisan vendor:publish --tag=statamic-clear-assets-config
+ ```
+
+Here's all of the configuration options with their defaults:
+
+```php
+return [
+
+    /**
+     * Where should we look to see if assets are still referenced or not?
+     * If you're referencing assets elsewhere in your codebase, add those paths here.
+     * All paths are relative to the base_path()
+     */
+    'scan_folders' => [
+        'content',
+    ],
+
+    /**
+     * All assets from these containers will be left alone.
+     * You can see all your asset containers under content/assets folder.
+     */
+    'ignore_containers' => [
+        'favicons',
+        'social_images',
+    ],
+
+    /**
+     * If we come across these filenames, we'll just leave them alone.
+     * You can use "*" as a wildcard. eg: "IMAGE*.jpg" will ignore IMAGE1.jpg IMAGE23.jpg etc...
+     */
+    'ignore_filenames' => [
+        //
+    ],
+
+    /**
+     * You might not want to delete very fresh assets, as perhaps you want to use them soon.
+     * Use this config to only detect and delete files older than x days.
+     */
+    'minimum_age_in_days' => 0,
+];
+```
