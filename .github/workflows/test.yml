@@ -4,22 +4,23 @@ on: [push]
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
         php: [7.4, 8.0, 8.1, 8.2]
         laravel: [8.*, 9.*, 10.*]
-        stability: [prefer-stable]
+        statamic: [3.*, 4.*]
         exclude:      
           - laravel: 8.*
             php: 8.2
           - laravel: 9.*
             php: 7.4
+          - laravel: 10.*
+            statamic: 3.*
         dependency-version: [prefer-stable]
 
-    name: P${{ matrix.php }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
+    name: P${{ matrix.php }} - ${{ matrix.laravel }} - ${{ matrix.statamic }}
 
     steps:
       - name: Checkout code
@@ -37,7 +38,7 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
       - name: Install dependencies
-        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+        run: composer require laravel/framework:${{ matrix.laravel }} statamic/cms:${{ matrix.statamic }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
         run: vendor/bin/phpunit
