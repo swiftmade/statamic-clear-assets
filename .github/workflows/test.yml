@@ -17,13 +17,13 @@ jobs:
           - laravel: 9.*
             php: 7.4
           - laravel: 8.*
-            statamic: 4.*            
+            statamic: 4.*
           - laravel: 10.*
             statamic: 3.*
           - laravel: 10.*
             php: 7.4
           - laravel: 10.*
-            php: 8.0                        
+            php: 8.0
         dependency-version: [prefer-stable]
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - S${{ matrix.statamic }}
