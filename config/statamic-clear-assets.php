@@ -9,6 +9,7 @@ return [
      */
     'scan_folders' => [
         'content',
+        'users',
     ],
 
     /**
