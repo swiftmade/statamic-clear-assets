@@ -105,7 +105,8 @@ class ClearAssets extends Command
             return true;
         });
 
-        collect(config('statamic-clear-assets.scan_folders', ['content']))
+        collect(config('statamic-clear-assets.scan_folders', ['content', 'users']))
+            ->filter(fn ($folder) => file_exists(base_path($folder)))
             ->map(fn ($folder) => File::allFiles(base_path($folder)))
             ->flatten()
             ->unique()
