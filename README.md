@@ -6,7 +6,7 @@
 
 Clean up unused images and assets from your Statamic site. Saves storage, keep things tidy.
 
-The addon scans your entire `content` directory. If an asset is not referenced in any of your content, it will be marked as unused. You can review the list of unused assets and delete them.
+The addon scans your entire `content` and `users` directory. If an asset is not referenced anywhere, it will be marked as unused. You can review the list of unused assets and delete them.
 
 The addon is easy to configure. See the [Configuration](#configuration) section below.
 
@@ -48,6 +48,7 @@ return [
      */
     'scan_folders' => [
         'content',
+        'users',
     ],
 
     /**
@@ -74,3 +75,22 @@ return [
     'minimum_age_in_days' => 0,
 ];
 ```
+
+## Common Questions
+
+**It's deleting assets that I'm referencing in my antlers templates!**
+
+If you want to ignore the assets referenced in your views, add `resources/views` to the `scan_folders` config. Keep in mind that this will only work if the filename is mentioned verbatim in the code. If you are using variables or other logic to reference the asset, the addon might not be able to detect that the asset is being used.
+
+**How do I always keep PDF files?**
+
+Add `*.pdf` to the `ignore_filenames` config.
+
+**How do I always keep assets from a specific container?**
+
+Add the container's slug to the `ignore_containers` config.
+
+**How do I only delete assets older than 30 days?**
+
+Set `minimum_age_in_days` to `30` in the config.
+
