@@ -8,12 +8,14 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [7.4, 8.0, 8.1, 8.2]
-        laravel: [8.*, 9.*, 10.*]
+        php: [7.4, 8.0, 8.1, 8.2, 8.3]
+        laravel: [8.*, 9.*, 10.*, 11.*]
         statamic: [3.*, 4.*]
-        exclude:      
+        exclude:
           - laravel: 8.*
             php: 8.2
+          - laravel: 8.*
+            php: 8.3
           - laravel: 9.*
             php: 7.4
           - laravel: 8.*
@@ -24,6 +26,12 @@ jobs:
             php: 7.4
           - laravel: 10.*
             php: 8.0
+          - laravel: 11.*
+            php: 7.4
+          - laravel: 11.*
+            php: 8.0
+          - laravel: 11.*
+            statamic: 3.*
         dependency-version: [prefer-stable]
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - S${{ matrix.statamic }}
