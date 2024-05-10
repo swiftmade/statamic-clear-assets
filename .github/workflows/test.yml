@@ -1,5 +1,4 @@
 name: run-tests
-
 on: [push]
 
 jobs:
