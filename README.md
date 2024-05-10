@@ -4,6 +4,9 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/swiftmade/statamic-clear-assets.svg?style=for-the-badge)](https://packagist.org/packages/swiftmade/statamic-clear-assets)
 ![Downloads](https://img.shields.io/packagist/dt/swiftmade/statamic-clear-assets?style=for-the-badge)
 
+
+> Supports Statamic 3, 4 and 5.
+
 Clean up unused images and assets from your Statamic site. Saves storage, keep things tidy.
 
 The addon scans your entire `content` and `users` directory. If an asset is not referenced anywhere, it will be marked as unused. You can review the list of unused assets and delete them.
