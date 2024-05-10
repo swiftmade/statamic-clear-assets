@@ -15,11 +15,13 @@ jobs:
             php: 8.2
           - laravel: 8.*
             php: 8.3
-          - laravel: 9.*
-            php: 7.4
+          - laravel: 8.*
+            statamic: 5.*
           - laravel: 8.*
             statamic: 4.*
-          - laravel: 8.*
+          - laravel: 9.*
+            php: 7.4
+          - laravel: 9.*
             statamic: 5.*
           - laravel: 10.*
             statamic: 3.*
