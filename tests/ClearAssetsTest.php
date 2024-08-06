@@ -110,6 +110,21 @@ class ClearAssetsTest extends TestCase
         $this->assertContainerFileCount('assets', 1);
     }
 
+    /**
+     * @test
+     */
+    public function it_skips_confirmation_in_no_interaction_mode()
+    {
+        $this->createAsset('ankara.jpg');
+        $this->createAsset('tallinn.jpg');
+
+        $this->artisan(ClearAssets::class, ['--force' => true])
+            ->expectsOutput('Removing ankara.jpg')
+            ->expectsOutput('Removing tallinn.jpg');
+
+        $this->assertContainerFileCount('assets', 0);
+    }
+
     private function createAsset($filename, $container = 'assets')
     {
         $tmpFile = tempnam(sys_get_temp_dir(), 'test_' . $filename);

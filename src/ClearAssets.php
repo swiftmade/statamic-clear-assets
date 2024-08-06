@@ -13,11 +13,13 @@ class ClearAssets extends Command
 {
     use RunsInPlease;
 
-    protected $name = 'statamic:assets:clear';
+    protected $signature = 'statamic:assets:clear {--force=}';
 
     protected $description = "Delete unused assets.";
 
     private $choice;
+
+    private $isForced = false;
 
     const CMD_DELETE_ALL = 'Delete all';
     const CMD_DELETE_BY_CHOICE = 'Choose what to delete';
@@ -31,6 +33,8 @@ class ClearAssets extends Command
 
     public function handle()
     {
+        $this->isForced = (bool) $this->option('force');
+
         $unusedAssets = $this->filterUnused(Asset::all());
 
         if ($unusedAssets->isEmpty()) {
@@ -132,6 +136,11 @@ class ClearAssets extends Command
 
     private function presentChoices()
     {
+        if ($this->isForced) {
+            $this->choice = self::CMD_DELETE_ALL;
+            return;
+        }
+
         $this->choice = $this->choice(
             'What would you like to do?',
             self::$choices,
