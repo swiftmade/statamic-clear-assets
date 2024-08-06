@@ -37,7 +37,7 @@ If you want to skip the interactive mode, you can use the `--force` flag:
 
 ```bash
 # This will delete all the unused assets without asking for confirmation!
-php please assets:clear --force
+php please assets:clear --force=true
 ```
 
 ## Configuration
