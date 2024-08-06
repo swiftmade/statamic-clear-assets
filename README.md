@@ -31,6 +31,15 @@ Simply run:
 php please assets:clear
 ```
 
+It will list all the assets that are not referenced anywhere in your content directory. You can delete them all at once, or one by one.
+
+If you want to skip the interactive mode, you can use the `--force` flag:
+
+```bash
+# This will delete all the unused assets without asking for confirmation!
+php please assets:clear --force
+```
+
 ## Configuration
 
 To publish the config file, use:
