@@ -95,8 +95,15 @@ class TestCase extends OrchestraTestCase
         parent::resolveApplicationConfiguration($app);
 
         $configs = [
-            'assets', 'cp', 'forms', 'routes', 'static_caching',
-            'sites', 'stache', 'system', 'users',
+            'assets',
+            'cp',
+            'forms',
+            'routes',
+            'static_caching',
+            'sites',
+            'stache',
+            'system',
+            'users',
         ];
 
         foreach ($configs as $config) {
