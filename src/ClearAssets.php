@@ -87,7 +87,7 @@ class ClearAssets extends Command
             // Skip assets that are in the ignored containers.
             $shouldIgnore = in_array(
                 $asset->container()->handle(),
-                config('statamic-clear-assets.ignore_containers')
+                config('statamic-clear-assets.ignore_containers', [])
             );
 
             if ($shouldIgnore) {
@@ -95,7 +95,7 @@ class ClearAssets extends Command
             }
 
             // Skip assets that match the ignore_filenames.
-            foreach (config('statamic-clear-assets.ignore_filenames') as $pattern) {
+            foreach (config('statamic-clear-assets.ignore_filenames', []) as $pattern) {
                 if (Str::is($pattern, $asset->path())) {
                     return false;
                 }
@@ -138,6 +138,7 @@ class ClearAssets extends Command
     {
         if ($this->isForced) {
             $this->choice = self::CMD_DELETE_ALL;
+
             return;
         }
 
