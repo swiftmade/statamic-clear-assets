@@ -42,8 +42,8 @@ class ClearAssets extends Command
         }
 
         $unusedAssets
-            ->tap(fn($assets) => $this->listAssets($assets))
-            ->tap(fn($assets) => $this->comment(
+            ->tap(fn ($assets) => $this->listAssets($assets))
+            ->tap(fn ($assets) => $this->comment(
                 sprintf(
                     'Found %d unused %s, taking up %s of storage.',
                     $assets->count(),
@@ -53,14 +53,14 @@ class ClearAssets extends Command
                     )
                 )
             ))
-            ->tap(fn() => $this->presentChoices())
+            ->tap(fn () => $this->presentChoices())
             ->when(
                 $this->choice === self::CMD_DELETE_ALL,
-                fn($assets) => $assets->each(fn($asset) => $this->removeAsset($asset))
+                fn ($assets) => $assets->each(fn ($asset) => $this->removeAsset($asset))
             )
             ->when(
                 $this->choice === self::CMD_DELETE_BY_CHOICE,
-                fn($assets) => $assets->each(function ($asset) {
+                fn ($assets) => $assets->each(function ($asset) {
                     if ($this->confirm('Delete "' . $asset->path() . '" ?')) {
                         $this->removeAsset($asset);
                     }
@@ -73,7 +73,7 @@ class ClearAssets extends Command
         $this->table(
             ['Asset', 'Size'],
             $assets->map(
-                fn($asset) => [
+                fn ($asset) => [
                     $asset->path(),
                     $this->readableFilesize($asset->size()),
                 ]
@@ -110,8 +110,8 @@ class ClearAssets extends Command
         });
 
         collect(config('statamic-clear-assets.scan_folders', ['content', 'users']))
-            ->filter(fn($folder) => file_exists(base_path($folder)))
-            ->map(fn($folder) => File::allFiles(base_path($folder)))
+            ->filter(fn ($folder) => file_exists(base_path($folder)))
+            ->map(fn ($folder) => File::allFiles(base_path($folder)))
             ->flatten()
             ->unique()
             ->each(function ($contentFile) use ($assets) {
@@ -138,6 +138,7 @@ class ClearAssets extends Command
     {
         if ($this->isForced) {
             $this->choice = self::CMD_DELETE_ALL;
+
             return;
         }
 
