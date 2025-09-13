@@ -56,6 +56,7 @@ class ClearAssetsTest extends TestCase
      */
     public function it_ignores_containers()
     {
+        // These two assets are in ignored containers by default
         $this->createAsset('ankara.jpg', 'social_images');
         $this->createAsset('tallinn.jpg', 'favicons');
 
@@ -127,7 +128,7 @@ class ClearAssetsTest extends TestCase
 
     private function createAsset($filename, $container = 'assets')
     {
-        $tmpFile = tempnam(sys_get_temp_dir(), 'test_' . $filename);
+        $tmpFile = tempnam(sys_get_temp_dir(), $filename);
         copy(__DIR__ . '/fixtures/' . $filename, $tmpFile);
 
         $file = new UploadedFile(
