@@ -110,7 +110,7 @@ class TestCase extends OrchestraTestCase
 
             $path = __DIR__ . "/../vendor/statamic/cms/config/{$config}.php";
 
-            if (!file_exists($path)) {
+            if (! file_exists($path)) {
                 continue;
             }
 
@@ -125,7 +125,7 @@ class TestCase extends OrchestraTestCase
 
     protected function initializeDirectory($directory)
     {
-        if (!file_exists($directory)) {
+        if (! file_exists($directory)) {
             mkdir($directory);
         }
     }
