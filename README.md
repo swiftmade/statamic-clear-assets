@@ -5,6 +5,7 @@
 ![Downloads](https://img.shields.io/packagist/dt/swiftmade/statamic-clear-assets?style=for-the-badge)
 
 
+
 > Supports Statamic 3, 4 and 5.
 
 Clean up unused images and assets from your Statamic site. Saves storage, keep things tidy.
