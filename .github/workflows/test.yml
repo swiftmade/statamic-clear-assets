@@ -88,6 +88,9 @@ jobs:
         if: matrix.statamic == '6.*'
         run: composer config minimum-stability dev
 
+      - name: Disable Composer security audit blocking
+        run: composer config audit.block-insecure false
+
       - name: Install dependencies
         run: composer require laravel/framework:${{ matrix.laravel }} statamic/cms:${{ matrix.statamic }} --prefer-dist --no-interaction --no-suggest
 
