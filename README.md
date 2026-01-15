@@ -6,7 +6,7 @@
 
 
 
-> Supports Statamic 3, 4 and 5.
+> Supports Statamic 3, 4, 5 and 6.
 
 Clean up unused images and assets from your Statamic site. Saves storage, keep things tidy.
 
