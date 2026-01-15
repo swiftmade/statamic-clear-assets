@@ -9,7 +9,7 @@ jobs:
       matrix:
         php: [7.4, 8.0, 8.1, 8.2, 8.3]
         laravel: [8.*, 9.*, 10.*, 11.*, 12.*]
-        statamic: [3.*, 4.*, 5.*]
+        statamic: [3.*, 4.*, 5.*, 6.*]
         exclude:
           - laravel: 8.*
             php: 8.2
@@ -48,7 +48,23 @@ jobs:
           - laravel: 12.*
             statamic: 3.*
           - laravel: 12.*
-            statamic: 4.*            
+            statamic: 4.*
+          - laravel: 8.*
+            statamic: 6.*
+          - laravel: 9.*
+            statamic: 6.*
+          - laravel: 10.*
+            statamic: 6.*
+          - laravel: 11.*
+            statamic: 6.*
+          - statamic: 6.*
+            php: 7.4
+          - statamic: 6.*
+            php: 8.0
+          - statamic: 6.*
+            php: 8.1
+          - statamic: 6.*
+            php: 8.2
         dependency-version: [prefer-stable]
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - S${{ matrix.statamic }}
@@ -68,6 +84,13 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Set minimum-stability to dev for Statamic 6
+        if: matrix.statamic == '6.*'
+        run: composer config minimum-stability dev
+
+      - name: Disable Composer security audit blocking
+        run: composer config audit.block-insecure false
+
       - name: Install dependencies
         run: composer require laravel/framework:${{ matrix.laravel }} statamic/cms:${{ matrix.statamic }} --prefer-dist --no-interaction --no-suggest
 

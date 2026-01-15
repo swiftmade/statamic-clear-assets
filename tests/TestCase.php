@@ -4,7 +4,6 @@ namespace Swiftmade\StatamicClearAssets\Tests;
 
 use Statamic\Statamic;
 use Statamic\Assets\Asset;
-use Statamic\Extend\Manifest;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Swiftmade\StatamicClearAssets\Tests\Concerns\ManagesAssetContainers;
@@ -82,12 +81,26 @@ class TestCase extends OrchestraTestCase
     {
         parent::getEnvironmentSetUp($app);
 
-        $app->make(Manifest::class)->manifest = [
-            'swiftmade/statamic-clear-assets' => [
-                'id' => 'swiftmade/statamic-clear-assets',
-                'namespace' => 'Swiftmade\\StatamicClearAssets',
-            ],
-        ];
+        // Statamic 6 uses Statamic\Addons\Manifest, older versions use Statamic\Extend\Manifest
+        if (class_exists(\Statamic\Addons\Manifest::class)) {
+            // Statamic 6+
+            $app->make(\Statamic\Addons\Manifest::class)->manifest = [
+                'swiftmade/statamic-clear-assets' => [
+                    'id' => 'swiftmade/statamic-clear-assets',
+                    'namespace' => 'Swiftmade\\StatamicClearAssets',
+                    'autoload' => 'src',
+                    'provider' => \Swiftmade\StatamicClearAssets\ServiceProvider::class,
+                ],
+            ];
+        } elseif (class_exists(\Statamic\Extend\Manifest::class)) {
+            // Statamic 3-5
+            $app->make(\Statamic\Extend\Manifest::class)->manifest = [
+                'swiftmade/statamic-clear-assets' => [
+                    'id' => 'swiftmade/statamic-clear-assets',
+                    'namespace' => 'Swiftmade\\StatamicClearAssets',
+                ],
+            ];
+        }
     }
 
     protected function resolveApplicationConfiguration($app)

@@ -6,6 +6,10 @@ use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
 {
+    protected $commands = [
+        ClearAssets::class,
+    ];
+
     public function bootAddon()
     {
         /**
@@ -18,9 +22,5 @@ class ServiceProvider extends AddonServiceProvider
                 'statamic-clear-assets'
             );
         }
-
-        $this->commands([
-            ClearAssets::class,
-        ]);
     }
 }
