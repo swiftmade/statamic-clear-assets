@@ -84,6 +84,10 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Set minimum-stability to dev for Statamic 6
+        if: matrix.statamic == '6.*'
+        run: composer config minimum-stability dev
+
       - name: Install dependencies
         run: composer require laravel/framework:${{ matrix.laravel }} statamic/cms:${{ matrix.statamic }} --prefer-dist --no-interaction --no-suggest
 
