@@ -7,18 +7,12 @@ use Swiftmade\StatamicClearAssets\ClearAssets;
 
 class ClearAssetsTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_returns_when_there_are_no_unused_assets()
+    public function test_it_returns_when_there_are_no_unused_assets()
     {
         $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
     }
 
-    /**
-     * @test
-     */
-    public function it_can_exit_without_doing_anything()
+    public function test_it_can_exit_without_doing_anything()
     {
         $this->createAsset('tallinn.jpg');
         $this->createAsset('ankara.jpg');
@@ -33,10 +27,7 @@ class ClearAssetsTest extends TestCase
             ->doesntExpectOutput('Removing tallinn.jpg');
     }
 
-    /**
-     * @test
-     */
-    public function it_can_list_unused_assets()
+    public function test_it_can_list_unused_assets()
     {
         $this->createAsset('ankara.jpg');
         $this->createAsset('tallinn.jpg');
@@ -51,10 +42,7 @@ class ClearAssetsTest extends TestCase
             ->doesntExpectOutput('Removing tallinn.jpg');
     }
 
-    /**
-     * @test
-     */
-    public function it_ignores_containers()
+    public function test_it_ignores_containers()
     {
         // These two assets are in ignored containers by default
         $this->createAsset('ankara.jpg', 'social_images');
@@ -63,10 +51,7 @@ class ClearAssetsTest extends TestCase
         $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
     }
 
-    /**
-     * @test
-     */
-    public function it_ignores_filenames()
+    public function test_it_ignores_filenames()
     {
         config(['statamic-clear-assets.ignore_filenames' => ['ankara*']]);
 
@@ -75,10 +60,7 @@ class ClearAssetsTest extends TestCase
         $this->artisan(ClearAssets::class)->expectsOutput('No unused assets found.');
     }
 
-    /**
-     * @test
-     */
-    public function it_deletes_all_unused_assets()
+    public function test_it_deletes_all_unused_assets()
     {
         $this->createAsset('ankara.jpg');
         $this->createAsset('tallinn.jpg');
@@ -92,10 +74,7 @@ class ClearAssetsTest extends TestCase
         $this->assertContainerFileCount('assets', 0);
     }
 
-    /**
-     * @test
-     */
-    public function it_confirms_deletion_one_by_one()
+    public function test_it_confirms_deletion_one_by_one()
     {
         $this->createAsset('ankara.jpg');
         $this->createAsset('tallinn.jpg');
@@ -111,10 +90,7 @@ class ClearAssetsTest extends TestCase
         $this->assertContainerFileCount('assets', 1);
     }
 
-    /**
-     * @test
-     */
-    public function it_skips_confirmation_in_no_interaction_mode()
+    public function test_it_skips_confirmation_in_no_interaction_mode()
     {
         $this->createAsset('ankara.jpg');
         $this->createAsset('tallinn.jpg');
